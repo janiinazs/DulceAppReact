@@ -1,53 +1,11 @@
 
-import React, { useContext, useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { AuthContext } from '../context/AppContext';
-import { Card, Button, Chip, Title, Paragraph, Searchbar, IconButton } from 'react-native-paper';
+import { Chip, Searchbar } from 'react-native-paper';
+import ProductCard from '../components/ProductCard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useCart } from '../context/CartContext';
-import { useFavorites } from '../context/FavoritesContext';
 
-// Componente de Producto reutilizable usando Paper Card
-const ProductCard = ({ id, name, price, imageSource }) => {
-  const { addItem } = useCart();
-  const { isFavorite, toggleFavorite } = useFavorites();
-  const fav = isFavorite(id);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handleAdd = (product) => {
-    // pequeña animación de pulso
-    Animated.sequence([
-      Animated.timing(scaleAnim, { toValue: 1.12, duration: 120, useNativeDriver: true }),
-      Animated.timing(scaleAnim, { toValue: 1, duration: 120, useNativeDriver: true }),
-    ]).start();
-    addItem(product);
-  };
-
-  return (
-    <Card style={productStyles.card} mode="elevated">
-      <Card.Cover source={imageSource} style={productStyles.image} />
-      <IconButton
-        icon={fav ? 'heart' : 'heart-outline'}
-        size={24}
-        onPress={() => toggleFavorite({ id, name, price, image: imageSource })}
-        style={productStyles.favButton}
-        iconColor={fav ? '#E63946' : '#A57F6D'}
-      />
-      <Card.Content>
-        <Title style={productStyles.name}>{name}</Title>
-        <Paragraph style={productStyles.price}>$ {price}</Paragraph>
-      </Card.Content>
-      <Card.Actions style={productStyles.cardActions}>
-        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-          <IconButton icon="cart" size={22} onPress={() => handleAdd({ id, name, price })} iconColor="#A57F6D" />
-        </Animated.View>
-        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-          <Button mode="contained" onPress={() => handleAdd({ id, name, price })} buttonColor="#A57F6D">Añadir</Button>
-        </Animated.View>
-      </Card.Actions>
-    </Card>
-  );
-};
 
 const InicioScreen = () => {
     const { /* signOut */ } = useContext(AuthContext);
@@ -134,41 +92,7 @@ const InicioScreen = () => {
     );
 };
 
-// --- Estilos de ProductCard (Para mejor organización) ---
-const productStyles = StyleSheet.create({
-  card: {
-    width: 160,
-    borderRadius: 14,
-    overflow: 'hidden',
-    elevation: 3,
-  },
-  image: {
-    height: 140,
-  },
-  favButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 5,
-    backgroundColor: 'transparent',
-  },
-  cardActions: {
-    justifyContent: 'center',
-    padding: 12,
-  },
-  name: {
-    fontSize: 14,
-    fontWeight: '700',
-    marginBottom: 4,
-    color: '#333',
-  },
-  price: {
-    fontSize: 14,
-    color: '#A57F6D',
-    fontWeight: '700',
-  },
-});
-
+// ProductCard styles moved to `src/components/ProductCard.jsx`
 
 // --- Estilos de InicioScreen ---
 const styles = StyleSheet.create({
