@@ -10,7 +10,7 @@ const OwnerLogin = ({ navigation }) => {
 
   const handleLogin = () => {
     // Aquí podrías añadir lógica específica para dueños (por ejemplo verificación extra)
-    signIn({ email, password });
+    signIn({ email, password, role: 'owner' });
   };
 
   const promptVerify = () => {

@@ -9,7 +9,7 @@ const CustomerLogin = ({ navigation }) => {
   const { signIn } = useContext(AuthContext);
 
   const handleLogin = () => {
-    signIn({ email, password });
+    signIn({ email, password, role: 'customer' });
   };
 
   return (
