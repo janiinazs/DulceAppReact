@@ -1,87 +1,65 @@
 import React, { useState, useContext } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../context/AppContext';
-import { Ionicons } from '@expo/vector-icons';
 
-const RegisterScreen = ({ route }) => {
-  const [username, setUsername] = useState('');
+const OwnerRegister = ({ navigation }) => {
+  const [ownerName, setOwnerName] = useState('');
+  const [bakeryName, setBakeryName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [bakeryName, setBakeryName] = useState('');
 
-  const navigation = useNavigation();
   const { signUp } = useContext(AuthContext);
-  const role = route?.params?.role || 'customer';
 
-  const handleRegister = () => {
+  const handleOwnerRegister = () => {
+    if (!ownerName || !bakeryName || !email || !password) {
+      Alert.alert('Error', 'Por favor completa todos los campos.');
+      return;
+    }
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Las contraseñas no coinciden.');
       return;
     }
 
-    signUp({
-      username,
-      email,
-      password,
-      bakeryName: role === 'owner' ? bakeryName : undefined,
-      role,
-    });
+    // Llama a signUp con role: owner y bakeryName
+    signUp({ username: ownerName, email, password, bakeryName, role: 'owner' });
 
-    navigation.navigate('Login');
+    Alert.alert('Registro', 'Registro de pastelería completado. Ahora puedes iniciar sesión.', [
+      { text: 'OK', onPress: () => navigation.navigate('Login') },
+    ]);
   };
 
   return (
     <SafeAreaView style={styles.screen}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.container}
       >
-        <Ionicons name="cake" size={28} color="#A57F6D" style={styles.logo} />
-
-        <View style={styles.card}>
-          <Text style={styles.title}>
-            {role === 'owner' ? 'Registro de Pastelería' : 'Crea tu Cuenta'}
-          </Text>
-
-          <Text style={styles.subtitle}>
-            {role === 'owner'
-              ? 'Completa los datos para registrar tu local'
-              : 'Únete a DulceApp y descubre sabores'}
-          </Text>
+        <View style={styles.card} accessibilityRole="form">
+          <Text style={styles.logo}>DulceApp</Text>
+          <Text style={styles.title}>Registro de Pastelería</Text>
+          <Text style={styles.subtitle}>Crea tu cuenta y verifica tu local</Text>
 
           <TextInput
             style={styles.input}
-            placeholder="Nombre de usuario"
-            value={username}
-            onChangeText={setUsername}
+            placeholder="Nombre del Dueño"
+            value={ownerName}
+            onChangeText={setOwnerName}
             placeholderTextColor="#8b6a5d"
           />
 
-          {role === 'owner' && (
-            <TextInput
-              style={styles.input}
-              placeholder="Nombre de Pastelería"
-              value={bakeryName}
-              onChangeText={setBakeryName}
-              placeholderTextColor="#8b6a5d"
-            />
-          )}
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre de Pastelería"
+            value={bakeryName}
+            onChangeText={setBakeryName}
+            placeholderTextColor="#8b6a5d"
+          />
 
           <TextInput
             style={styles.input}
-            placeholder="Correo electrónico"
+            placeholder="Correo Electrónico"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -94,7 +72,7 @@ const RegisterScreen = ({ route }) => {
             placeholder="Contraseña"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={true}
+            secureTextEntry
             placeholderTextColor="#8b6a5d"
           />
 
@@ -103,26 +81,21 @@ const RegisterScreen = ({ route }) => {
             placeholder="Confirmar Contraseña"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
-            secureTextEntry={true}
+            secureTextEntry
             placeholderTextColor="#8b6a5d"
           />
 
           <TouchableOpacity
             style={styles.registerButton}
-            onPress={handleRegister}
+            onPress={handleOwnerRegister}
+            accessibilityLabel="Registrarme"
+            accessibilityRole="button"
           >
-            <Text style={styles.registerButtonText}>
-              {role === 'owner' ? 'REGISTRAR PASTELERÍA' : 'REGÍSTRATE'}
-            </Text>
+            <Text style={styles.registerButtonText}>REGISTRAR PASTELERÍA</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Login')}
-            style={styles.loginLink}
-          >
-            <Text style={styles.linkText}>
-              ¿Ya tienes una cuenta? Inicia sesión
-            </Text>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.linkRow} accessibilityRole="link">
+            <Text style={styles.linkText}>Volver</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -141,9 +114,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  logo: {
-    marginBottom: 12,
-  },
   card: {
     width: '92%',
     backgroundColor: '#FFF9F5',
@@ -158,10 +128,14 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.12,
         shadowRadius: 12,
       },
-      android: {
-        elevation: 6,
-      },
+      android: { elevation: 6 },
     }),
+  },
+  logo: {
+    color: '#6F3F2B',
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 6,
   },
   title: {
     fontSize: 18,
@@ -172,7 +146,7 @@ const styles = StyleSheet.create({
   subtitle: {
     color: '#6F3F2B',
     textAlign: 'center',
-    marginBottom: 14,
+    marginBottom: 18,
     fontSize: 13,
   },
   input: {
@@ -199,14 +173,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 14,
   },
-  loginLink: {
+  linkRow: {
     marginTop: 12,
   },
   linkText: {
     color: '#6F3F2B',
     fontSize: 13,
     textDecorationLine: 'underline',
-  },
+  }
 });
 
-export default RegisterScreen;
+export default OwnerRegister;

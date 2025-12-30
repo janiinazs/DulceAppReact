@@ -1,221 +1,139 @@
-
-import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ImageBackground } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../context/AppContext';
 import { Ionicons } from '@expo/vector-icons';
 
-// Soporte para logo personalizado en assets/logo-dulceapp.png
-let logoSrc = null;
-try {
-  // Si el archivo existe, será incluido en el bundle
-  logoSrc = require('../../assets/logo-dulceapp.png');
-} catch (e) {
-  // archivo no existente todavía; se usará el icono vectorial como fallback
-}
-
 const LoginScreen = () => {
-  const [email, setEmail] = useState('test@app.com');
-  const [password, setPassword] = useState('12345');
   const navigation = useNavigation();
-  const { signIn } = useContext(AuthContext); // Función de login del contexto
 
-  const handleLogin = () => {
-    signIn({ email, password });
-  };
+  const goToCustomer = () => navigation.navigate('CustomerLogin');
+  const goToOwner = () => navigation.navigate('OwnerLogin');
+  const goToAdmin = () => navigation.navigate('AdminLogin');
 
   return (
-    <ImageBackground source={require('../../assets/icon.png')} style={styles.bg} imageStyle={styles.bgImage}>
-      <View style={styles.overlay} />
-      <View style={styles.centerCard}>
-        <View style={styles.logoContainer} accessible accessibilityLabel="Logo DulceApp">
-          {logoSrc ? (
-            <Image source={logoSrc} style={styles.logo} />
-          ) : (
-            <Ionicons name="cake" size={44} color="#A57F6D" />
-          )}
-        </View>        <Text style={styles.appName}>DULCEAPP</Text>        <Text style={styles.title}>¡Hola! Entra y descubre un mundo de sabores</Text>
+    <SafeAreaView style={styles.screen}>
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Ionicons name="heart" size={36} color="#A57F6D" style={styles.logo} />
 
-        <View style={styles.form}>
-          <View style={styles.inputWrap}>
-            <Ionicons name="mail-outline" size={18} color="#A57F6D" style={styles.inputIcon} />
-            <TextInput
-              placeholder="Correo Electrónico"
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-          </View>
+          <Text style={styles.title}>DulceApp</Text>
 
-          <View style={styles.inputWrap}>
-            <Ionicons name="lock-closed-outline" size={18} color="#A57F6D" style={styles.inputIcon} />
-            <TextInput
-              placeholder="Contraseña"
-              value={password}
-              onChangeText={setPassword}
-              style={styles.input}
-              secureTextEntry
-            />
-          </View>
+          <Text style={styles.subtitle}>
+            ¡Bienvenido a DulceApp!{"\n"}¿Quién eres tú?
+          </Text>
 
-          <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-            <Text style={styles.primaryButtonText}>INICIAR SESIÓN</Text>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={goToCustomer}
+          >
+            <Text style={styles.primaryButtonText}>Cliente</Text>
           </TouchableOpacity>
 
-          <View style={styles.linksRow}>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.smallLink}>¿No tienes cuenta? ¡Registrate!</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity onPress={() => {/* invitado */}}>
-            <Text style={styles.guest}>Entrar como invitado</Text>
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={goToOwner}
+          >
+            <Text style={styles.secondaryButtonText}>Dueño de Pastelería</Text>
           </TouchableOpacity>
 
-          <View style={styles.socialRow}>
-            <TouchableOpacity style={styles.socialBtn} onPress={() => {}}>
-              <Ionicons name="logo-google" size={20} color="#DB4437" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.socialBtn} onPress={() => {}}>
-              <Ionicons name="logo-facebook" size={20} color="#3b5998" />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.adminRow}
+            onPress={goToAdmin}
+          >
+            <Ionicons name="settings-outline" size={18} color="#A57F6D" />
+            <Text style={styles.adminText}>  Acceso Administrador</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </ImageBackground>
+    </SafeAreaView>
   );
 };
 
-// --- Estilos de LoginScreen ---
 const styles = StyleSheet.create({
-  bg: {
+  screen: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#F9F4F0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#EFE6DE',
   },
-  bgImage: {
-    resizeMode: 'cover',
-    opacity: 0.18,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(249,244,240,0.7)'
-  },
-  centerCard: {
-    width: '90%',
-    maxWidth: 420,
-    backgroundColor: '#FFF5F1',
-    borderRadius: 18,
-    padding: 28,
-    alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-  },
-  logoContainer: {
-    width: 84,
-    height: 84,
-    borderRadius: 42,
-    backgroundColor: '#ffffff',
+  container: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    padding: 20,
+  },
+  card: {
+    width: '92%',
+    backgroundColor: '#FFF9F5',
+    borderRadius: 24,
+    paddingVertical: 36,
+    paddingHorizontal: 26,
+    alignItems: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+      },
+      android: {
+        elevation: 6,
+      },
+    }),
   },
   logo: {
-    width: 56,
-    height: 56,
-    resizeMode: 'contain'
-  },
-  appName: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#A57F6D',
-    letterSpacing: 2,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   title: {
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: '700',
-    color: '#4a2f23',
+    color: '#6F3F2B',
+    marginBottom: 6,
+  },
+  subtitle: {
     textAlign: 'center',
-    marginBottom: 18,
-  },
-  form: {
-    width: '100%'
-  },
-  inputWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 28,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-    height: 50,
-    borderWidth: 2,
-    borderColor: '#E6D7CF'
-  },
-  inputIcon: {
-    marginRight: 8
-  },
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: '#4a4a4a'
+    color: '#6F3F2B',
+    fontSize: 18,
+    marginBottom: 24,
+    lineHeight: 26,
   },
   primaryButton: {
-    marginTop: 6,
-    backgroundColor: '#A57F6D',
-    paddingVertical: 12,
-    borderRadius: 26,
+    backgroundColor: '#6F3F2B',
+    width: '100%',
+    paddingVertical: 16,
+    borderRadius: 28,
     alignItems: 'center',
-    marginBottom: 12,
-    elevation: 2,
+    marginBottom: 14,
   },
   primaryButtonText: {
-    color: '#fff',
+    color: '#FFF8F3',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  secondaryButton: {
+    backgroundColor: '#FFF9F5',
+    width: '100%',
+    paddingVertical: 14,
+    borderRadius: 28,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#A57F6D',
+    marginBottom: 18,
+  },
+  secondaryButtonText: {
+    color: '#6F3F2B',
     fontSize: 16,
-    fontWeight: '800'
+    fontWeight: '600',
   },
-  linksRow: {
-    alignItems: 'center',
-    marginVertical: 6
-  },
-  smallLink: {
-    color: '#7a4f3d'
-  },
-  guest: {
-    color: '#74605a',
-    textAlign: 'center',
-    marginTop: 8,
-    textDecorationLine: 'underline'
-  },
-  socialRow: {
-    marginTop: 16,
+  adminRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12
-  },
-  socialBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 3,
-  }
+    marginTop: 6,
+    opacity: 0.9,
+  },
+  adminText: {
+    color: '#A57F6D',
+    fontSize: 14,
+  },
 });
 
 export default LoginScreen;
